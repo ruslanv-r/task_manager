@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.Random;
 
 public class Client {
+
     public static char pickRandomChar() {
         String chars = "ABCDEFG";
         return chars.charAt(new Random().nextInt(chars.length()));
@@ -20,6 +21,8 @@ public class Client {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         ) {
             out.println("{ \"type\": \"ADD\", \"task\": \"task #" + pickRandomChar() + "\" }");
+
+
             System.out.println(in.readLine());
         }
     }
