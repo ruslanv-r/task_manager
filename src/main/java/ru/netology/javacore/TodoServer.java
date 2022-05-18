@@ -20,36 +20,40 @@ public class TodoServer {
 
     public void start() throws IOException {
 
-        while (true) {
-            System.out.println("Starting server at " + port + "...");
-            ServerSocket serverSocket = new ServerSocket(port);
-            Socket connection = serverSocket.accept();
-            PrintWriter out = new PrintWriter(connection.getOutputStream(), true); //исх
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream())); //вх
-            System.out.println("Port - " + connection.getPort());
-            String inValue= in.readLine();
-            System.out.println(inValue);
+        try (ServerSocket serverSocket = new ServerSocket(port);) {
+            while (true) {
+                System.out.println("Starting server at " + port + "...");
+                try (
+                        Socket connection = serverSocket.accept();
+                        PrintWriter out = new PrintWriter(connection.getOutputStream(), true); //исх
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream())); //вх
+                ) {
+                    System.out.println("Port - " + connection.getPort());
+                    String inValue = in.readLine();
+                    System.out.println(inValue);
 
 
+                    GsonBuilder builder = new GsonBuilder();
+                    Gson gson = builder.create();
+                    Map map = gson.fromJson(inValue, Map.class);
+                    System.out.println(map);
+                    if (map.containsKey("type")) {
+                        String str = (String) map.get("type");
+                        if (str.equals("ADD")) {
+                            todos.addTask((String) map.get("task"));
+                        }
 
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
-            Map map = gson.fromJson(inValue, Map.class);
-            System.out.println(map);
-            if(map.containsKey("type")){
-                String str = (String) map.get("type");
-                if (str.equals("ADD")){
-                    todos.addTask((String) map.get("task"));
+                    }
+                    System.out.println(todos.getAllTasks());
+
+                    //serverSocket.close();
+
                 }
 
             }
-            System.out.println(todos.getAllTasks());
-
-            serverSocket.close();
-
-
+        } catch (IOException e) {
+            System.out.println("Не могу стартовать сервер");
+            e.printStackTrace();
         }
-
-
     }
 }
