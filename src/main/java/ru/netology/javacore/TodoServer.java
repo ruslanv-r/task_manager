@@ -45,7 +45,7 @@ public class TodoServer {
 
                     }
                     System.out.println(todos.getAllTasks());
-
+                    out.println(todos.getAllTasks());
                     //serverSocket.close();
 
                 }
